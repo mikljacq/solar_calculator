@@ -175,9 +175,9 @@ void main() {
     });
 
     test('1960-01-01 04:56Z', () {
-      final instant = Instant(year: 1969, hour: 4, second: 56);
+      final instant = Instant(year: 1960, hour: 4, minute: 56);
       expect(instant.sinceEpoch,
-          Timespan.fromMilliseconds(DateTime.utc(1969, 1, 1, 4, 56).millisecondsSinceEpoch.toDouble()));
+          Timespan.fromMilliseconds(DateTime.utc(1960, 1, 1, 4, 56).millisecondsSinceEpoch.toDouble()));
     });
 
     test('1600-03-12', () {
