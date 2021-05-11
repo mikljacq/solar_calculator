@@ -1,12 +1,13 @@
 import 'package:solar_calculator/solar_calculator.dart';
+import 'package:solar_calculator/src/instant.dart';
 
 void main() {
-  var latitude = 41.29708;
-  var longitude = 2.07846;
+  final latitude = 41.387048;
+  final longitude = 2.17413425;
 
-  var date = DateTime.now();
+  final instant = Instant(year: 2021, month: 5, day: 10, hour: 14, timeZoneOffset: 2.0);
 
-  var calc = SolarCalculator(date, latitude, longitude);
+  final calc = SolarCalculator(instant, latitude, longitude);
 
   print('Sun Equatorial position:');
   print(

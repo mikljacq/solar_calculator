@@ -7,3 +7,4 @@ export 'src/coordinateSystems/equatorialCoordinate.dart';
 export 'src/coordinateSystems/horizontalCoordinate.dart';
 export 'src/angles/hourAngle.dart';
 export 'src/twilight.dart';
+export 'src/instant.dart';
