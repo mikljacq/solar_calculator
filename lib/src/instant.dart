@@ -27,17 +27,17 @@ class Instant {
   /// For example, to create a [Instant] object representing the 12th of March 2021 at 1:15pm in the UTC+02:00 time zone:
   ///
   /// ```
-  /// var instant = Instant(2021, 03, 12, 13, 15, 0, 2.0);
+  /// var instant = Instant(year: 2021, month: 03, day: 12, hour: 13, minute: 15, second: 0, timeZoneOffset: 2.0);
   /// ```
-  Instant(
-    this.year, [
+  Instant({
+    required this.year,
     this.month = 1,
     this.day = 1,
     this.hour = 0,
     this.minute = 0,
     this.second = 0,
     this.timeZoneOffset = 0.0,
-  ]);
+  });
 
   /// Creates a new [Instant] from the given [dateTime]. The [Instant] will be created in the time zone of the [dateTime]
   /// unless a [timeZoneOffset] is specified. If so, it will be created in the time zone corresponding to that offset from UTC.
@@ -54,9 +54,12 @@ class Instant {
   /// // The timezone offset of instantNow will be 0.0 hour.
   /// ```
   Instant.fromDateTime(DateTime dateTime, {double? timeZoneOffset})
-      : timeZoneOffset = (timeZoneOffset != null) ? timeZoneOffset : dateTime.timeZoneOffset.totalHours {
-    final offsetDateTime =
-        (timeZoneOffset == null) ? dateTime : dateTime.toUtc().add(Timespan.fromHours(timeZoneOffset));
+      : timeZoneOffset = (timeZoneOffset != null)
+            ? timeZoneOffset
+            : dateTime.timeZoneOffset.totalHours {
+    final offsetDateTime = (timeZoneOffset == null)
+        ? dateTime
+        : dateTime.toUtc().add(Timespan.fromHours(timeZoneOffset));
 
     year = offsetDateTime.year;
     month = offsetDateTime.month;
@@ -69,7 +72,10 @@ class Instant {
   /// The day of year of this [Instant].
   int get dayOfYear {
     final k = (isLeapYear ? 1 : 2);
-    return ((275 * month) / 9).floor() - (k * ((month + 9) / 12).floor()) + day - 30;
+    return ((275 * month) / 9).floor() -
+        (k * ((month + 9) / 12).floor()) +
+        day -
+        30;
   }
 
   /// Returns true if `this` is in a leap year.
@@ -123,7 +129,8 @@ class Instant {
   Instant add(Duration duration) => this + duration;
 
   /// Returns a new [Instant] value corresponding to the begining of the day represented by `this` [Instant].
-  Instant beginingOfDay() => Instant(year, month, day, 0, 0, 0, timeZoneOffset);
+  Instant beginingOfDay() => Instant(
+      year: year, month: month, day: day, timeZoneOffset: timeZoneOffset);
 
   // double get julianDay {
   //   final jd = difference(Instant(-4713, 11, 24, 12)).totalDays;
@@ -179,7 +186,8 @@ class Instant {
   /// * `ss` are seconds in the range 00 to 59 (no leap seconds),
   /// * `zzzzzz` is the time zone (Z if UTC, otherwise +HH:mm or -HH:mm),
   String toIso8601String() {
-    final y = (year >= -9999 && year <= 9999) ? _fourDigits(year) : _sixDigits(year);
+    final y =
+        (year >= -9999 && year <= 9999) ? _fourDigits(year) : _sixDigits(year);
     final m = _twoDigits(month);
     final d = _twoDigits(day);
     final h = _twoDigits(hour);
@@ -216,7 +224,9 @@ class Instant {
   /// Returns `this` [Instant] value in the UTC time zone.
   ///
   /// Returns `this` if it is already in UTC.
-  Instant toUtc() => (timeZoneOffset == 0) ? this : Instant.fromDateTime(DateTime.utc(1970, 1, 1).add(sinceEpoch));
+  Instant toUtc() => (timeZoneOffset == 0)
+      ? this
+      : Instant.fromDateTime(DateTime.utc(1970, 1, 1).add(sinceEpoch));
 
   /// Returns a [DateTime] object in the UTC time zone based on `this` [Instant].
   DateTime toUtcDateTime() {
@@ -254,13 +264,18 @@ class Instant {
     // Pope Gregory introduced the Gregorian calendar in October 1582 when the calendar had drifted 10 days.
     // Dates prior to October 4, 1582 are Julian dates and dates after October 15, 1582 are Gregorian dates.
     // Any date in the gap is invalid on the Gregorian calendar.
-    if (isAfter(Instant(1582, 10, 14))) // Convert to Gregorian calendar
+    if (isAfter(Instant(
+        year: 1582, month: 10, day: 14))) // Convert to Gregorian calendar
     {
       final a = (year / 100).floor();
       b = 2 - a + (a / 4).floor();
     }
 
-    return (365.25 * (year + 4716)).floor() + (30.6001 * (month + 1)).floor() + day + b - 1524.5;
+    return (365.25 * (year + 4716)).floor() +
+        (30.6001 * (month + 1)).floor() +
+        day +
+        b -
+        1524.5;
   }
 
   Duration _computeSinceEpoch() {
@@ -269,7 +284,10 @@ class Instant {
 
     final y = year - 1970;
     var a = y * 365;
-    var b = ((y + 2) / 4).floor() - ((y + 70) / 100).floor() + ((y + 1570) / 400).floor() - 3;
+    var b = ((y + 2) / 4).floor() -
+        ((y + 70) / 100).floor() +
+        ((y + 1570) / 400).floor() -
+        3;
 
     if (_isLeapYear(year) && month <= 2) b -= 1;
 
@@ -291,7 +309,8 @@ class Instant {
     final hours = timeZoneOffset.truncate();
 
     final tzH = _twoDigits(hours.abs());
-    final tzM = _twoDigits(((timeZoneOffset - hours) * Duration.minutesPerHour).round().abs());
+    final tzM = _twoDigits(
+        ((timeZoneOffset - hours) * Duration.minutesPerHour).round().abs());
     return '$timezoneSign$tzH:$tzM';
   }
 
@@ -304,7 +323,8 @@ class Instant {
     return '${sign}000$absN';
   }
 
-  static bool _isLeapYear(int year) => (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+  static bool _isLeapYear(int year) =>
+      (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
 
   static String _sixDigits(int n) {
     assert(n < -9999 || n > 9999);

@@ -20,12 +20,14 @@ class SunriseSunsetCalculator {
   final double latitude;
   final double longitude;
 
-  SunriseSunsetCalculator(this.instant, this.latitude, this.longitude, {this.sunZenithDistance = 90.833});
+  SunriseSunsetCalculator(this.instant, this.latitude, this.longitude,
+      {this.sunZenithDistance = 90.833});
 
   double _calculateSunriseMinutes(Instant instant) {
     final sun = Sun(instant);
 
-    final hourAngle = _calculateSolarHourAngleForSunriseSunset(sun.equatorialPosition.declination);
+    final hourAngle = _calculateSolarHourAngleForSunriseSunset(
+        sun.equatorialPosition.declination);
 
     // 1 degree of longitude = 4 minutes
     // 720 = noon time in minutes
@@ -35,7 +37,8 @@ class SunriseSunsetCalculator {
   double _calculateSunsetMinutes(Instant instant) {
     final sun = Sun(instant);
 
-    final hourAngle = _calculateSolarHourAngleForSunriseSunset(sun.equatorialPosition.declination);
+    final hourAngle = _calculateSolarHourAngleForSunriseSunset(
+        sun.equatorialPosition.declination);
 
     // 1 degree of longitude = 4 minutes
     // 720 = noon time in minutes
@@ -46,20 +49,26 @@ class SunriseSunsetCalculator {
     final beginingOfDay = instant.beginingOfDay();
 
     var tNoon = (beginingOfDay - Timespan.fromDays(longitude / 360));
-    final solarNoonOffset = 720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
+    final solarNoonOffset =
+        720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
 
     tNoon = (beginingOfDay + Timespan.fromMinutes(solarNoonOffset));
-    final solarNoonUtc = 720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
+    final solarNoonUtc =
+        720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
 
-    return beginingOfDay + Timespan.fromMinutes(solarNoonUtc + (instant.timeZoneOffset * Duration.minutesPerHour));
+    return beginingOfDay +
+        Timespan.fromMinutes(
+            solarNoonUtc + (instant.timeZoneOffset * Duration.minutesPerHour));
   }
 
   Instant calculateSunrise() {
     final beginingOfDay = instant.beginingOfDay();
 
     final sunriseTime = _calculateSunriseMinutes(beginingOfDay);
-    final newSunriseTime =
-        sunriseTime.isNaN ? double.nan : _calculateSunriseMinutes(beginingOfDay + Timespan.fromMinutes(sunriseTime));
+    final newSunriseTime = sunriseTime.isNaN
+        ? double.nan
+        : _calculateSunriseMinutes(
+            beginingOfDay + Timespan.fromMinutes(sunriseTime));
 
     if (newSunriseTime.isNaN) {
       // No sunrise found
@@ -75,19 +84,24 @@ class SunriseSunsetCalculator {
       return _calculateNextSunrise();
     }
 
-    return beginingOfDay + Timespan.fromMinutes(newSunriseTime + (instant.timeZoneOffset * Duration.minutesPerHour));
+    return beginingOfDay +
+        Timespan.fromMinutes(newSunriseTime +
+            (instant.timeZoneOffset * Duration.minutesPerHour));
   }
 
   Instant calculateSunset() {
     final beginingOfDay = instant.beginingOfDay();
 
     final sunsetTime = _calculateSunsetMinutes(beginingOfDay);
-    final newSunsetTime =
-        sunsetTime.isNaN ? double.nan : _calculateSunsetMinutes(beginingOfDay + Timespan.fromMinutes(sunsetTime));
+    final newSunsetTime = sunsetTime.isNaN
+        ? double.nan
+        : _calculateSunsetMinutes(
+            beginingOfDay + Timespan.fromMinutes(sunsetTime));
 
     if (newSunsetTime.isNaN) {
       // No sunset found
-      final dayOfYear = instant.dayOfYear; //julianDate.gregorianDateTime.dayOfYear;
+      final dayOfYear =
+          instant.dayOfYear; //julianDate.gregorianDateTime.dayOfYear;
 
       if ((latitude > 66.4 && dayOfYear > 79 && dayOfYear < 267) ||
           (latitude < -66.4 && (dayOfYear < 83 || dayOfYear > 263))) {
@@ -99,18 +113,25 @@ class SunriseSunsetCalculator {
       return _calculatePreviousSunset();
     }
 
-    return beginingOfDay + Timespan.fromMinutes(newSunsetTime + (instant.timeZoneOffset * Duration.minutesPerHour));
+    return beginingOfDay +
+        Timespan.fromMinutes(
+            newSunsetTime + (instant.timeZoneOffset * Duration.minutesPerHour));
   }
 
-  Instant _calculateNextSunrise() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunriseMinutes);
+  Instant _calculateNextSunrise() =>
+      _calculateNextPreviousEvent(Duration(days: 1), _calculateSunriseMinutes);
 
-  Instant _calculatePreviousSunrise() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunriseMinutes);
+  Instant _calculatePreviousSunrise() =>
+      _calculateNextPreviousEvent(Duration(days: -1), _calculateSunriseMinutes);
 
-  Instant _calculateNextSunset() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunsetMinutes);
+  Instant _calculateNextSunset() =>
+      _calculateNextPreviousEvent(Duration(days: 1), _calculateSunsetMinutes);
 
-  Instant _calculatePreviousSunset() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunsetMinutes);
+  Instant _calculatePreviousSunset() =>
+      _calculateNextPreviousEvent(Duration(days: -1), _calculateSunsetMinutes);
 
-  Instant _calculateNextPreviousEvent(Duration duration, double Function(Instant instant) getEvent) {
+  Instant _calculateNextPreviousEvent(
+      Duration duration, double Function(Instant instant) getEvent) {
     var beginingOfDay = instant.beginingOfDay();
     var time = double.nan;
 
@@ -119,7 +140,9 @@ class SunriseSunsetCalculator {
       time = getEvent(beginingOfDay);
     }
 
-    return beginingOfDay + Timespan.fromMinutes(time + (instant.timeZoneOffset * Duration.minutesPerHour));
+    return beginingOfDay +
+        Timespan.fromMinutes(
+            time + (instant.timeZoneOffset * Duration.minutesPerHour));
   }
 
   /// Gets the solar hour angle in degrees for sunset and sunrise calculation, corrected for atmospheric refraction,
@@ -134,7 +157,9 @@ class SunriseSunsetCalculator {
   /// and before and after solar noon the cos(± h) term = the same value for morning (negative hour angle) or afternoon (positive hour angle),
   /// i.e. the sun is at the same altitude in the sky at 11:00AM and 1:00PM solar time, etc.
   double _calculateSolarHourAngleForSunriseSunset(double sunDeclination) =>
-      acos((cos(sunZenithDistance.toRadians()) / (cos(latitude.toRadians()) * cos(sunDeclination.toRadians()))) -
+      acos((cos(sunZenithDistance.toRadians()) /
+                  (cos(latitude.toRadians()) *
+                      cos(sunDeclination.toRadians()))) -
               (tan(latitude.toRadians()) * tan(sunDeclination.toRadians())))
           .toDegrees();
 }

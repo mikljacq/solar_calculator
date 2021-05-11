@@ -25,7 +25,8 @@ class Sun {
 
   EquatorialCoordinate? _equatorialPosition;
 
-  factory Sun(Instant instant) => _cache.putIfAbsent(instant.julianDay, () => Sun._internal(instant));
+  factory Sun(Instant instant) =>
+      _cache.putIfAbsent(instant.julianDay, () => Sun._internal(instant));
 
   Sun._internal(this.instant);
 
@@ -69,8 +70,9 @@ class Sun {
   ///
   /// The mean longitude is the ecliptic longitude at which an orbiting body could be found if its orbit were circular and
   /// free of perturbations.
-  double get meanLongitude => _meanLongitude ??=
-      evaluatePolynomial(instant.julianCenturies, [280.46646, 36000.76983, 0.0003032]).correctDegreesForLargeAngles();
+  double get meanLongitude => _meanLongitude ??= evaluatePolynomial(
+          instant.julianCenturies, [280.46646, 36000.76983, 0.0003032])
+      .correctDegreesForLargeAngles();
 
   /// The geometric mean anomaly of the Sun in degrees.
   ///
@@ -81,13 +83,15 @@ class Sun {
   /// Note that the word "apparent" is always used to denote that the Sun, planets, and stars appear to move across the
   /// sky in a 24-hour period. Obviously, the true movement is the rotation of the Earth on its axis but it is convenient
   /// to talk of the apparent motion of the Sun and planets across the sky.
-  double get meanAnomaly => _meanAnomaly ??= uncorrectedMeanAnomaly.correctDegreesForLargeAngles();
+  double get meanAnomaly =>
+      _meanAnomaly ??= uncorrectedMeanAnomaly.correctDegreesForLargeAngles();
 
   /// The geometric mean anomaly of the Sun in degrees, uncorrected for large angles.
   ///
   /// See [meanAnomaly].
   double get uncorrectedMeanAnomaly =>
-      _uncorrectedMeanAnomaly ??= evaluatePolynomial(instant.julianCenturies, [357.52911, 35999.05029, -0.0001537]);
+      _uncorrectedMeanAnomaly ??= evaluatePolynomial(
+          instant.julianCenturies, [357.52911, 35999.05029, -0.0001537]);
 
   /// The Sun's equation of center, in degrees.
   ///
@@ -105,7 +109,9 @@ class Sun {
 
       final julianCenturies = instant.julianCenturies;
 
-      _equationOfCenter = (sin(mRadians) * (1.914602 - julianCenturies * (0.004817 + 0.000014 * julianCenturies))) +
+      _equationOfCenter = (sin(mRadians) *
+              (1.914602 -
+                  julianCenturies * (0.004817 + 0.000014 * julianCenturies))) +
           (sin(mRadians * 2.0) * (0.019993 - 0.000101 * julianCenturies)) +
           (sin(mRadians * 3.0) * 0.000289);
     }
@@ -118,14 +124,16 @@ class Sun {
   /// In celestial mechanics, true longitude is the ecliptic longitude at which an orbiting body could actually be found if
   /// its inclination were zero. Together with the inclination and the ascending node, the true longitude can tell us
   /// the precise direction from the central object at which the body would be located at a particular time.
-  double get trueLongitude => _trueLongitude ??= (meanLongitude + equationOfCenter).correctDegreesForLargeAngles();
+  double get trueLongitude => _trueLongitude ??=
+      (meanLongitude + equationOfCenter).correctDegreesForLargeAngles();
 
   /// The true anomaly of the Sun in degrees.
   ///
   /// In celestial mechanics, true anomaly is an angular parameter that defines the position of a body moving along a
   /// Keplerian orbit. It is the angle between the direction of periapsis and the current position of the body, as seen
   /// from the main focus of the ellipse (the point around which the object orbits)
-  double get trueAnomaly => _trueAnomaly ??= (meanAnomaly + equationOfCenter).correctDegreesForLargeAngles();
+  double get trueAnomaly => _trueAnomaly ??=
+      (meanAnomaly + equationOfCenter).correctDegreesForLargeAngles();
 
   /// The radius vector in Astronomical Units.
   ///
@@ -139,7 +147,8 @@ class Sun {
     if (_radiusVector == null) {
       // U.S. Naval Observatory function for radius vector
       final mRadians = meanAnomaly.toRadians();
-      _radiusVector = 1.00014 - (0.01671 * cos(mRadians)) - (0.00014 * cos(2 * mRadians));
+      _radiusVector =
+          1.00014 - (0.01671 * cos(mRadians)) - (0.00014 * cos(2 * mRadians));
     }
 
     return _radiusVector!;
@@ -148,8 +157,10 @@ class Sun {
   /// The apparent longitude of the Sun in degrees.
   ///
   /// Apparent longitude is the celestial longitude corrected for aberration and nutation as opposed to mean longitude.
-  double get apparentLongitude => _apparentLongitude ??=
-      trueLongitude - 0.00569 - (0.00478 * sin(Earth(instant).nutationAndAberrationCorrection.toRadians()));
+  double get apparentLongitude => _apparentLongitude ??= trueLongitude -
+      0.00569 -
+      (0.00478 *
+          sin(Earth(instant).nutationAndAberrationCorrection.toRadians()));
 
   /// The Apparent position of the Sun in the Equatorial Coordinate System.
   ///
@@ -162,14 +173,17 @@ class Sun {
       final earth = Earth(instant);
 
       final rightAscension = atan2(
-        cos(earth.correctedObliquityOfEcliptic.toRadians()) * sin(apparentLongitude.toRadians()),
+        cos(earth.correctedObliquityOfEcliptic.toRadians()) *
+            sin(apparentLongitude.toRadians()),
         cos(apparentLongitude.toRadians()),
       );
 
-      final declination =
-          asin(sin(earth.correctedObliquityOfEcliptic.toRadians()) * sin(apparentLongitude.toRadians()));
+      final declination = asin(
+          sin(earth.correctedObliquityOfEcliptic.toRadians()) *
+              sin(apparentLongitude.toRadians()));
 
-      _equatorialPosition = EquatorialCoordinate(HourAngle.fromRadians(rightAscension), declination.toDegrees());
+      _equatorialPosition = EquatorialCoordinate(
+          HourAngle.fromRadians(rightAscension), declination.toDegrees());
     }
 
     return _equatorialPosition!;
@@ -184,10 +198,12 @@ class Sun {
 
     final sunDeclinationRadians = equatorialPosition.declination.toRadians();
 
-    final zenithRadians = _calculateSolarZenithAngle(latitudeRadians, sunDeclinationRadians, hourAngleRadians);
+    final zenithRadians = _calculateSolarZenithAngle(
+        latitudeRadians, sunDeclinationRadians, hourAngleRadians);
     final zenith = zenithRadians.toDegrees();
 
-    final azimuth = _calculateAzimuth(latitudeRadians, zenithRadians, sunDeclinationRadians, hourAngle);
+    final azimuth = _calculateAzimuth(
+        latitudeRadians, zenithRadians, sunDeclinationRadians, hourAngle);
     final elevation = _calculateElevation(zenith);
 
     return HorizontalCoordinate(azimuth, elevation);
@@ -196,8 +212,10 @@ class Sun {
   /// Calculates the solar zenith angle in radians.
   ///
   /// The [latitude], [declination] and [hourAngle] must be in radians.
-  double _calculateSolarZenithAngle(double latitude, double declination, double hourAngle) {
-    final cosinusSolarZenith = (sin(latitude) * sin(declination)) + (cos(latitude) * cos(declination) * cos(hourAngle));
+  double _calculateSolarZenithAngle(
+      double latitude, double declination, double hourAngle) {
+    final cosinusSolarZenith = (sin(latitude) * sin(declination)) +
+        (cos(latitude) * cos(declination) * cos(hourAngle));
 
     if (cosinusSolarZenith > 1.0) return acos(1.0);
     if (cosinusSolarZenith < -1.0) return acos(-1.0);
@@ -211,7 +229,9 @@ class Sun {
   ///
   /// The [longitude] is given in degrees.
   double _calculateLocalHourAngle(double longitude) {
-    final timeOffset = equationOfTime + (4.0 * longitude) - (Duration.minutesPerHour * instant.timeZoneOffset);
+    final timeOffset = equationOfTime +
+        (4.0 * longitude) -
+        (Duration.minutesPerHour * instant.timeZoneOffset);
 
     // final utcDateTime = instant.toUtc();
     // final time = utcDateTime.time;
@@ -223,7 +243,8 @@ class Sun {
       trueSolarTime -= Duration.minutesPerDay;
     }
 
-    var hourAngle = (trueSolarTime / 4.0) - 180.0; // Solar hour angle in degrees
+    var hourAngle =
+        (trueSolarTime / 4.0) - 180.0; // Solar hour angle in degrees
     if (hourAngle < -180) hourAngle += 360.0;
 
     return hourAngle;
@@ -234,7 +255,8 @@ class Sun {
   /// [zenithAngle] is given in degrees.
   double _calculateElevation(double zenithAngle) {
     // Atmospheric Refraction correction
-    final refractionCorrection = _calculateAtmosphericRefractionCorrection(90.0 - zenithAngle);
+    final refractionCorrection =
+        _calculateAtmosphericRefractionCorrection(90.0 - zenithAngle);
 
     final correctedSolarZenith = zenithAngle - refractionCorrection;
     return 90.0 - correctedSolarZenith;
@@ -244,13 +266,16 @@ class Sun {
   ///
   /// The [latitude], [zenithAngle] and [declination] must be in radians.
   /// The [hourAgngle] must be in degrees.
-  double _calculateAzimuth(double latitude, double zenithAngle, double declination, double hourAngle) {
+  double _calculateAzimuth(double latitude, double zenithAngle,
+      double declination, double hourAngle) {
     double azimuth;
 
     final azimuthDenominator = cos(latitude) * sin(zenithAngle);
 
     if (azimuthDenominator.abs() > 0.001) {
-      var azimuthRadians = ((sin(latitude) * cos(zenithAngle)) - sin(declination)) / azimuthDenominator;
+      var azimuthRadians =
+          ((sin(latitude) * cos(zenithAngle)) - sin(declination)) /
+              azimuthDenominator;
 
       if (azimuthRadians.abs() > 1.0) {
         azimuthRadians = (azimuthRadians < 0) ? -1.0 : 1.0;
@@ -282,9 +307,11 @@ class Sun {
     double correction;
 
     if (elevation > 5.0) {
-      correction = evaluatePolynomial(1 / tanElevation, [0, 58.1, 0, -0.07, 0, 0.000086]);
+      correction = evaluatePolynomial(
+          1 / tanElevation, [0, 58.1, 0, -0.07, 0, 0.000086]);
     } else if (elevation > -0.575) {
-      correction = evaluatePolynomial(elevation, [1735, -518.2, 103.4, -12.79, 0.711]);
+      correction =
+          evaluatePolynomial(elevation, [1735, -518.2, 103.4, -12.79, 0.711]);
     } else {
       correction = -20.774 / tanElevation;
     }

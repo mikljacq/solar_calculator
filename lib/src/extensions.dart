@@ -31,5 +31,6 @@ extension DurationExtension on Duration {
   double get totalSeconds => inMicroseconds / Duration.microsecondsPerSecond;
 
   /// The total number of milliseconds spanned by this [Duration], expressed in whole and fractional milliseconds.
-  double get totalMilliseconds => inMicroseconds / Duration.microsecondsPerMillisecond;
+  double get totalMilliseconds =>
+      inMicroseconds / Duration.microsecondsPerMillisecond;
 }

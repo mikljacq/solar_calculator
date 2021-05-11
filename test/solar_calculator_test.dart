@@ -8,7 +8,7 @@ void main() {
   const _kAnglesAccuracy = 0.05;
 
   group('Barcelona with time zone ', () {
-    final instant = Instant(2021, 05, 09, 01, 48, 00, 02);
+    final instant = Instant(year: 2021, month: 05, day: 09, hour: 01, minute: 48, timeZoneOffset: 02);
 
     final calc = SolarCalculator(instant, 41.387048, 2.17413425);
 
@@ -50,7 +50,7 @@ void main() {
     });
   });
 
-  final refDate = Instant(2021, 05, 02);
+  final refDate = Instant(year: 2021, month: 05, day: 02);
 
   final date = refDate.add(Duration(hours: 13, minutes: 25, seconds: 35));
 
@@ -148,9 +148,9 @@ void main() {
     '80° 12°': {
       'latitude': 80.0,
       'longitude': 12.0,
-      'sunrise': Instant(2021, 04, 13).add(Timespan.fromMinutes(-11.654374107739168)),
+      'sunrise': Instant(year: 2021, month: 04, day: 13).add(Timespan.fromMinutes(-11.654374107739168)),
       'noon': refDate.add(Duration(hours: 11, minutes: 08)),
-      'sunset': Instant(2021, 08, 30).add(Timespan.fromMinutes(1349.7335155238095)),
+      'sunset': Instant(year: 2021, month: 08, day: 30).add(Timespan.fromMinutes(1349.7335155238095)),
       'declination': 15.55,
       'azimuth': 216.22,
       'elevation': 23.76,
@@ -158,9 +158,9 @@ void main() {
     '-80° 12°': {
       'latitude': -80.0,
       'longitude': 12.0,
-      'sunrise': Instant(2021, 08, 25).add(Timespan.fromMinutes(644.7320304778677)),
+      'sunrise': Instant(year: 2021, month: 08, day: 25).add(Timespan.fromMinutes(644.7320304778677)),
       'noon': refDate.add(Duration(hours: 11, minutes: 08)),
-      'sunset': Instant(2021, 04, 18).add(Timespan.fromMinutes(678.971344895073)),
+      'sunset': Instant(year: 2021, month: 04, day: 18).add(Timespan.fromMinutes(678.971344895073)),
       'declination': 15.55,
       'azimuth': 326.96,
       'elevation': -7.16,
@@ -168,9 +168,9 @@ void main() {
     '90° 12°': {
       'latitude': 90.0,
       'longitude': 12.0,
-      'sunrise': Instant(2020, 03, 18).add(Timespan.fromMinutes(370.22985636407043)),
+      'sunrise': Instant(year: 2020, month: 03, day: 18).add(Timespan.fromMinutes(370.22985636407043)),
       'noon': refDate.add(Duration(hours: 11, minutes: 08)),
-      'sunset': Instant(2021, 09, 25).add(Timespan.fromMinutes(972.5818948340684)),
+      'sunset': Instant(year: 2021, month: 09, day: 25).add(Timespan.fromMinutes(972.5818948340684)),
       'declination': 15.56,
       'azimuth': 214.17,
       'elevation': 15.69,
