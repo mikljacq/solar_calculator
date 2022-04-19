@@ -41,7 +41,7 @@ void main() {
   final latitude = 41.387048;
   final longitude = 2.17413425;
 
-  final instant = Instant(year: 2021, month: 0, day: 10, hour: 14, timeZoneOffset: 2.0);
+  final instant = Instant(year: 2021, month: 5, day: 10, hour: 14, timeZoneOffset: 2.0);
 
   final calc = SolarCalculator(instant, latitude, longitude);
 

@@ -1,3 +1,7 @@
+## 1.0.3
+
+- Correction of a potential imprecision of the instant object.
+
 ## 1.0.2
 
 - The instant in time for which to calculate the data is now specified by an Instant object that handle a time zone.
