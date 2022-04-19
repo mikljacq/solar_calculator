@@ -23,7 +23,7 @@ class Angle {
   /// Angle(degrees: -12, minutes: 32, seconds: 44);
   /// ```
   Angle({double degrees = 0, double minutes = 0, double seconds = 0}) {
-    var sign = (degrees.isNegative ? -1 : 1);
+    final sign = (degrees.isNegative ? -1 : 1);
 
     this.degrees = (degrees + (minutes / 60) + (seconds / 3600)) * sign;
     radians = this.degrees.toRadians();

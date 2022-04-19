@@ -54,6 +54,7 @@ void main() {
 
   final date = refDate.add(Duration(hours: 13, minutes: 25, seconds: 35));
 
+  // ignore: omit_local_variable_types
   Map<String, Map<String, dynamic>> expectedResults = {
     'Barcelona': {
       'latitude': 41.387048,

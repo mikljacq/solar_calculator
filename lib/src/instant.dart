@@ -54,12 +54,9 @@ class Instant {
   /// // The timezone offset of instantNow will be 0.0 hour.
   /// ```
   Instant.fromDateTime(DateTime dateTime, {double? timeZoneOffset})
-      : timeZoneOffset = (timeZoneOffset != null)
-            ? timeZoneOffset
-            : dateTime.timeZoneOffset.totalHours {
-    final offsetDateTime = (timeZoneOffset == null)
-        ? dateTime
-        : dateTime.toUtc().add(Timespan.fromHours(timeZoneOffset));
+      : timeZoneOffset = (timeZoneOffset != null) ? timeZoneOffset : dateTime.timeZoneOffset.totalHours {
+    final offsetDateTime =
+        (timeZoneOffset == null) ? dateTime : dateTime.toUtc().add(Timespan.fromHours(timeZoneOffset));
 
     year = offsetDateTime.year;
     month = offsetDateTime.month;
@@ -72,10 +69,7 @@ class Instant {
   /// The day of year of this [Instant].
   int get dayOfYear {
     final k = (isLeapYear ? 1 : 2);
-    return ((275 * month) / 9).floor() -
-        (k * ((month + 9) / 12).floor()) +
-        day -
-        30;
+    return ((275 * month) / 9).floor() - (k * ((month + 9) / 12).floor()) + day - 30;
   }
 
   /// Returns true if `this` is in a leap year.
@@ -129,8 +123,7 @@ class Instant {
   Instant add(Duration duration) => this + duration;
 
   /// Returns a new [Instant] value corresponding to the begining of the day represented by `this` [Instant].
-  Instant beginingOfDay() => Instant(
-      year: year, month: month, day: day, timeZoneOffset: timeZoneOffset);
+  Instant beginingOfDay() => Instant(year: year, month: month, day: day, timeZoneOffset: timeZoneOffset);
 
   // double get julianDay {
   //   final jd = difference(Instant(-4713, 11, 24, 12)).totalDays;
@@ -142,9 +135,9 @@ class Instant {
 
   /// Compares this [Instant] to [other], returning zero if the values are equal.
   ///
-  /// Returns a negative value if [this] [isBefore] [other]. It returns 0
-  /// if it [isAtSameMomentAs] [other], and returns a positive value otherwise
-  /// (when [this] [isAfter] [other]).
+  /// Returns a negative value if [this] is before [other]. It returns 0
+  /// if [this] is the same as [other], and returns a positive value otherwise
+  /// (when [this] is after [other]).
   int compareTo(Instant other) => sinceEpoch.compareTo(other.sinceEpoch);
 
   /// Returns a [Duration] with the difference when subtracting [other] from `this`.
@@ -186,8 +179,7 @@ class Instant {
   /// * `ss` are seconds in the range 00 to 59 (no leap seconds),
   /// * `zzzzzz` is the time zone (Z if UTC, otherwise +HH:mm or -HH:mm),
   String toIso8601String() {
-    final y =
-        (year >= -9999 && year <= 9999) ? _fourDigits(year) : _sixDigits(year);
+    final y = (year >= -9999 && year <= 9999) ? _fourDigits(year) : _sixDigits(year);
     final m = _twoDigits(month);
     final d = _twoDigits(day);
     final h = _twoDigits(hour);
@@ -224,9 +216,7 @@ class Instant {
   /// Returns `this` [Instant] value in the UTC time zone.
   ///
   /// Returns `this` if it is already in UTC.
-  Instant toUtc() => (timeZoneOffset == 0)
-      ? this
-      : Instant.fromDateTime(DateTime.utc(1970, 1, 1).add(sinceEpoch));
+  Instant toUtc() => (timeZoneOffset == 0) ? this : Instant.fromDateTime(DateTime.utc(1970, 1, 1).add(sinceEpoch));
 
   /// Returns a [DateTime] object in the UTC time zone based on `this` [Instant].
   DateTime toUtcDateTime() {
@@ -264,18 +254,13 @@ class Instant {
     // Pope Gregory introduced the Gregorian calendar in October 1582 when the calendar had drifted 10 days.
     // Dates prior to October 4, 1582 are Julian dates and dates after October 15, 1582 are Gregorian dates.
     // Any date in the gap is invalid on the Gregorian calendar.
-    if (isAfter(Instant(
-        year: 1582, month: 10, day: 14))) // Convert to Gregorian calendar
+    if (isAfter(Instant(year: 1582, month: 10, day: 14))) // Convert to Gregorian calendar
     {
       final a = (year / 100).floor();
       b = 2 - a + (a / 4).floor();
     }
 
-    return (365.25 * (year + 4716)).floor() +
-        (30.6001 * (month + 1)).floor() +
-        day +
-        b -
-        1524.5;
+    return (365.25 * (year + 4716)).floor() + (30.6001 * (month + 1)).floor() + day + b - 1524.5;
   }
 
   Duration _computeSinceEpoch() {
@@ -284,24 +269,31 @@ class Instant {
 
     final y = year - 1970;
     var a = y * 365;
-    var b = ((y + 2) / 4).floor() -
-        ((y + 70) / 100).floor() +
-        ((y + 1570) / 400).floor() -
-        3;
+    var b = ((y + 2) / 4).floor() - ((y + 70) / 100).floor() + ((y + 1570) / 400).floor() - 3;
 
     if (_isLeapYear(year) && month <= 2) b -= 1;
 
-    final days = day -
-        1 +
-        m +
-        a +
-        b +
-        (hour / Duration.hoursPerDay) +
-        (minute / Duration.minutesPerDay) +
-        (second / Duration.secondsPerDay) -
-        (timeZoneOffset / Duration.hoursPerDay);
+    final days = day - 1 + m + a + b;
 
-    return Timespan.fromDays(days);
+    final seconds = (days * Duration.secondsPerDay) +
+        (hour * Duration.secondsPerHour) +
+        (minute * Duration.secondsPerMinute) +
+        second -
+        (timeZoneOffset * Duration.secondsPerHour);
+
+    return Timespan.fromSeconds(seconds);
+
+    // final days = day -
+    //     1 +
+    //     m +
+    //     a +
+    //     b +
+    //     (hour / Duration.hoursPerDay) +
+    //     (minute / Duration.minutesPerDay) +
+    //     (second / Duration.secondsPerDay) -
+    //     (timeZoneOffset / Duration.hoursPerDay);
+
+    // return Timespan.fromDays(days);
   }
 
   String _timeZoneOffsetAsString() {
@@ -309,8 +301,7 @@ class Instant {
     final hours = timeZoneOffset.truncate();
 
     final tzH = _twoDigits(hours.abs());
-    final tzM = _twoDigits(
-        ((timeZoneOffset - hours) * Duration.minutesPerHour).round().abs());
+    final tzM = _twoDigits(((timeZoneOffset - hours) * Duration.minutesPerHour).round().abs());
     return '$timezoneSign$tzH:$tzM';
   }
 
@@ -323,8 +314,7 @@ class Instant {
     return '${sign}000$absN';
   }
 
-  static bool _isLeapYear(int year) =>
-      (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+  static bool _isLeapYear(int year) => (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
 
   static String _sixDigits(int n) {
     assert(n < -9999 || n > 9999);
